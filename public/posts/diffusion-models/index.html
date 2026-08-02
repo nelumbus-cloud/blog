@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>What are Diffusion Models? | Saroj&#39;s ML Notes</title>
+    <link rel="stylesheet" href="/css/style.css">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+      ]
+    });">
+    </script>
+</head>
+
+<body>
+    <header>
+        <a href="/">Saroj&#39;s ML Notes</a>
+        <nav>
+            <a href="/posts">Posts</a>
+            <a href="/about">About</a>
+        </nav>
+    </header>
+    <hr>
+    <main>
+<article>
+    <h1>What are Diffusion Models?</h1>
+    <p class="meta">January 15, 2024 · 3 min read</p>
+    <hr>
+    <p>Diffusion models are inspired by non-equilibrium thermodynamics. They define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise.</p>
+<h2 id="forward-diffusion-process">Forward Diffusion Process</h2>
+<p>Given a data point sampled from a real data distribution $\mathbf{x}_0 \sim q(\mathbf{x})$, we define a forward diffusion process in which we add small amount of Gaussian noise in $T$ steps, producing a sequence of noisy samples $\mathbf{x}_1, \dots, \mathbf{x}_T$.</p>
+$$
+q(\mathbf{x}_t \mid \mathbf{x}_{t-1}) = \mathcal{N}(\mathbf{x}_t;\ \sqrt{1-\beta_t}\,\mathbf{x}_{t-1},\ \beta_t \mathbf{I})
+$$<p>The step sizes are controlled by a variance schedule $\{\beta_t \in (0,1)\}_{t=1}^T$. A nice property is that we can sample $\mathbf{x}_t$ at any arbitrary timestep $t$ in closed form. Let $\alpha_t = 1 - \beta_t$ and $\bar{\alpha}_t = \prod_{i=1}^{t} \alpha_i$:</p>
+$$
+\begin{aligned}
+\mathbf{x}_t &= \sqrt{\alpha_t}\,\mathbf{x}_{t-1} + \sqrt{1-\alpha_t}\,\boldsymbol{\epsilon}_{t-1} \\
+&= \sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon}
+\end{aligned}
+$$<p>where $\boldsymbol{\epsilon} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$. As $T \to \infty$, $\mathbf{x}_T$ converges to a pure Gaussian distribution.</p>
+<h2 id="reverse-diffusion-process">Reverse Diffusion Process</h2>
+<p>If we can reverse the forward process and sample from $q(\mathbf{x}_{t-1} \mid \mathbf{x}_t)$, we can reconstruct the original signal from Gaussian noise. Unfortunately this reverse conditional probability is intractable since it requires knowing the entire dataset. So we learn a model $p_\theta$ to approximate it:</p>
+$$
+p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1};\ \boldsymbol{\mu}_\theta(\mathbf{x}_t, t),\ \boldsymbol{\Sigma}_\theta(\mathbf{x}_t, t))
+$$<p>The full reverse process is:</p>
+$$
+p_\theta(\mathbf{x}_{0:T}) = p(\mathbf{x}_T) \prod_{t=1}^{T} p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t)
+$$<h2 id="training-objective">Training Objective</h2>
+<p>Training is done by optimizing the variational lower bound on the negative log likelihood:</p>
+$$
+\mathbb{E}[-\log p_\theta(\mathbf{x}_0)] \leq \mathbb{E}_q \left[ -\log \frac{p_\theta(\mathbf{x}_{0:T})}{q(\mathbf{x}_{1:T} \mid \mathbf{x}_0)} \right] = \mathcal{L}
+$$<p>We can rewrite this as a sum of KL divergences:</p>
+$$
+\mathcal{L} = \mathbb{E}_q \left[ \underbrace{D_\text{KL}(q(\mathbf{x}_T \mid \mathbf{x}_0) \| p(\mathbf{x}_T))}_{\mathcal{L}_T} + \sum_{t=2}^{T} \underbrace{D_\text{KL}(q(\mathbf{x}_{t-1} \mid \mathbf{x}_t, \mathbf{x}_0) \| p_\theta(\mathbf{x}_{t-1} \mid \mathbf{x}_t))}_{\mathcal{L}_{t-1}} \underbrace{- \log p_\theta(\mathbf{x}_0 \mid \mathbf{x}_1)}_{\mathcal{L}_0} \right]
+$$<h2 id="simplified-loss">Simplified Loss</h2>
+<p>Ho et al. (2020) showed that training with a simplified objective works better in practice. Rather than predicting $\boldsymbol{\mu}_\theta$, we train the network to predict the noise $\boldsymbol{\epsilon}$:</p>
+$$
+\mathcal{L}_\text{simple} = \mathbb{E}_{t, \mathbf{x}_0, \boldsymbol{\epsilon}} \left[ \| \boldsymbol{\epsilon} - \boldsymbol{\epsilon}_\theta(\sqrt{\bar{\alpha}_t}\,\mathbf{x}_0 + \sqrt{1-\bar{\alpha}_t}\,\boldsymbol{\epsilon},\ t) \|^2 \right]
+$$<p>This is essentially a denoising score matching objective. The network $\boldsymbol{\epsilon}_\theta$ takes the noisy image and timestep as input and predicts the noise that was added.</p>
+<h2 id="parameterization-of">Parameterization of $\beta_t$</h2>
+<p>The variance schedule $\beta_t$ can be set in different ways. Ho et al. used a linear schedule:</p>
+$$
+\beta_1 = 10^{-4}, \quad \beta_T = 0.02, \quad T = 1000
+$$<p>Nichol &amp; Dhariwal (2021) proposed a cosine schedule which gives better results:</p>
+$$
+\bar{\alpha}_t = \frac{f(t)}{f(0)}, \quad f(t) = \cos\left(\frac{t/T + s}{1 + s} \cdot \frac{\pi}{2}\right)^2
+$$<p>where $s = 0.008$ is a small offset to prevent $\beta_t$ from being too small near $t=0$.</p>
+<h2 id="connection-to-score-matching">Connection to Score Matching</h2>
+<p>Diffusion models have a deep connection to score-based generative models. The score function is defined as:</p>
+$$
+\nabla_{\mathbf{x}} \log p(\mathbf{x})
+$$<p>The denoising objective is equivalent to learning the score of the data distribution at each noise level. Specifically:</p>
+$$
+\boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \approx -\sqrt{1-\bar{\alpha}_t}\, \nabla_{\mathbf{x}_t} \log q(\mathbf{x}_t)
+$$<p>This connection unifies two previously separate lines of work — denoising diffusion models and score-based models.</p>
+<h2 id="sampling">Sampling</h2>
+<p>Once trained, we sample by starting from $\mathbf{x}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ and iteratively denoising:</p>
+$$
+\mathbf{x}_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{1-\alpha_t}{\sqrt{1-\bar{\alpha}_t}} \boldsymbol{\epsilon}_\theta(\mathbf{x}_t, t) \right) + \sigma_t \mathbf{z}
+$$<p>where $\mathbf{z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ and $\sigma_t^2 = \beta_t$. This requires $T$ forward passes through the network, which is slow. DDIM (Song et al. 2020) accelerates this to as few as 50 steps with no retraining.</p>
+<h2 id="summary">Summary</h2>
+<table>
+	<thead>
+			<tr>
+					<th>Property</th>
+					<th>Diffusion Models</th>
+					<th>GANs</th>
+					<th>VAEs</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td>Training stability</td>
+					<td>High</td>
+					<td>Low</td>
+					<td>High</td>
+			</tr>
+			<tr>
+					<td>Sample quality</td>
+					<td>Very high</td>
+					<td>High</td>
+					<td>Medium</td>
+			</tr>
+			<tr>
+					<td>Sample diversity</td>
+					<td>High</td>
+					<td>Low</td>
+					<td>High</td>
+			</tr>
+			<tr>
+					<td>Sampling speed</td>
+					<td>Slow</td>
+					<td>Fast</td>
+					<td>Fast</td>
+			</tr>
+			<tr>
+					<td>Likelihood</td>
+					<td>Tractable</td>
+					<td>No</td>
+					<td>Lower bound</td>
+			</tr>
+	</tbody>
+</table>
+<p>Diffusion models achieve state-of-the-art results on image generation benchmarks while being significantly more stable to train than GANs.</p>
+
+</article>
+</main>
+    <hr>
+    <footer>© 2026 Saroj Baral</footer>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+	<channel>
+		<title>Saroj&#39;s ML Notes</title>
+		<link>http://localhost:1313/</link>
+		<description>Recent content on Saroj&#39;s ML Notes</description>
+		<generator>Hugo</generator>
+		<language>en-us</language>
+		
+		
+		
+		
+			<lastBuildDate>Mon, 15 Jan 2024 00:00:00 +0000</lastBuildDate>
+		
+			<atom:link href="http://localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+			<item>
+				<title>What are Diffusion Models?</title>
+				<link>http://localhost:1313/posts/diffusion-models/</link>
+				<pubDate>Mon, 15 Jan 2024 00:00:00 +0000</pubDate>
+				<guid>http://localhost:1313/posts/diffusion-models/</guid>
+				<description>&lt;p&gt;Diffusion models are inspired by non-equilibrium thermodynamics. They define a Markov chain of diffusion steps to slowly add random noise to data and then learn to reverse the diffusion process to construct desired data samples from the noise.&lt;/p&gt;&#xA;&lt;h2 id=&#34;forward-diffusion-process&#34;&gt;Forward Diffusion Process&lt;/h2&gt;&#xA;&lt;p&gt;Given a data point sampled from a real data distribution $\mathbf{x}_0 \sim q(\mathbf{x})$, we define a forward diffusion process in which we add small amount of Gaussian noise in $T$ steps, producing a sequence of noisy samples $\mathbf{x}_1, \dots, \mathbf{x}_T$.&lt;/p&gt;</description>
+			</item>
+			<item>
+				<title>About</title>
+				<link>http://localhost:1313/about/</link>
+				<pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+				<guid>http://localhost:1313/about/</guid>
+				<description>&lt;p&gt;I am a deeply enthusiastic person continuously in search of better frameworks for understanding machines, humans, and society.&lt;/p&gt;</description>
+			</item>
+	</channel>
+</rss>

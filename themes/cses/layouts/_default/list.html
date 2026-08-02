@@ -1,0 +1,10 @@
+{{ define "main" }}
+<h1>Posts</h1>
+<hr>
+{{ range .Pages }}
+<div class="post-item">
+    <a href="{{ .Permalink }}">{{ .Title }}</a>
+    <span class="date">{{ .Date.Format "2006-01-02" }}</span>
+</div>
+{{ end }}
+{{ end }}

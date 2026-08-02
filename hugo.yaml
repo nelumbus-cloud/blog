@@ -1,0 +1,24 @@
+baseURL: "https://blog.baralsaroj.com.np"
+title: "Saroj's ML Notes"
+theme: "cses"
+locale: "en-us"
+
+markup:
+  goldmark:
+    extensions:
+      passthrough:
+        enable: true
+        delimiters:
+          block:
+            - ["$$", "$$"]
+          inline:
+            - ["$", "$"]
+    renderer:
+      unsafe: true
+  highlight:
+    codeFences: true
+
+params:
+  math: true
+  author:
+    name: "Saroj Baral"

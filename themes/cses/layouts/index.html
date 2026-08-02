@@ -1,0 +1,8 @@
+{{ define "main" }}
+{{ range .Site.RegularPages }}
+<div class="post-item">
+    <a href="{{ .Permalink }}">{{ .Title }}</a>
+    <span class="date">{{ .Date.Format "2006-01-02" }}</span>
+</div>
+{{ end }}
+{{ end }}
