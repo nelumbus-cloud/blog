@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ range .Site.RegularPages }}
+{{ range where .Site.RegularPages "Section" "posts" }}
 <div class="post-item">
     <a href="{{ .Permalink }}">{{ .Title }}</a>
     <span class="date">{{ .Date.Format "2006-01-02" }}</span>
