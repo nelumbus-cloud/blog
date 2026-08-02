@@ -1,0 +1,198 @@
+/* CSES-inspired: white, clean, underlines, bars */
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 17px;
+    line-height: 1.7;
+    color: #111;
+    background: #fff;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 20px 24px;
+}
+
+/* Header bar */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 12px 0;
+    font-family: monospace;
+}
+
+header a {
+    color: #111;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+nav a {
+    color: #111;
+    text-decoration: underline;
+    margin-left: 20px;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #555;
+}
+
+/* Horizontal bars — the CSES signature */
+hr {
+    border: none;
+    border-top: 2px solid #111;
+    margin: 16px 0;
+}
+
+h1 {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 28px 0 16px;
+}
+
+h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 24px 0 12px;
+}
+
+h3 {
+    font-size: 17px;
+    font-weight: bold;
+    margin: 20px 0 8px;
+}
+
+/* Post meta */
+.meta {
+    font-size: 13px;
+    color: #666;
+    font-family: monospace;
+    margin-bottom: 20px;
+}
+
+/* Body text */
+p {
+    margin: 12px 0;
+}
+
+a {
+    color: #111;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: #555;
+}
+
+/* Math blocks */
+.katex-display {
+    margin: 20px 0;
+    overflow-x: auto;
+}
+
+/* Code */
+code {
+    font-family: "Courier New", monospace;
+    font-size: 14px;
+    background: #f5f5f5;
+    padding: 1px 5px;
+    border: 1px solid #ddd;
+}
+
+pre {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 14px;
+    overflow-x: auto;
+    margin: 16px 0;
+}
+
+pre code {
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+/* Post list */
+.post-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.post-item a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.post-item a:hover {
+    text-decoration: underline;
+}
+
+.date {
+    font-family: monospace;
+    font-size: 13px;
+    color: #666;
+}
+
+/* Images */
+img {
+    max-width: 100%;
+    display: block;
+    margin: 16px auto;
+}
+
+figcaption {
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    margin-top: 6px;
+}
+
+/* Tables */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 16px 0;
+}
+
+th {
+    border-bottom: 2px solid #111;
+    padding: 6px 10px;
+    text-align: left;
+}
+
+td {
+    border-bottom: 1px solid #ddd;
+    padding: 6px 10px;
+}
+
+/* Footer */
+footer {
+    font-size: 13px;
+    color: #888;
+    font-family: monospace;
+    padding: 10px 0;
+}
