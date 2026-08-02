@@ -1,4 +1,4 @@
-baseURL: "https://blog.baralsaroj.com.np"
+baseURL: "https://blog.baralsaroj.com.np/"
 title: "Saroj's ML Notes"
 theme: "cses"
 locale: "en-us"
